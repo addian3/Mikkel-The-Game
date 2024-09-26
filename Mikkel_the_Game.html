@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2566">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="en"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;Flappy Bird Clone with Highscore&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>body {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-color: #87CEEB; /* Sky blue */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>canvas {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: block;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin: 20px auto;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-color: #87CEEB;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>input {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-top: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;h1&gt;Flappy Bird Clone&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;canvas id="gameCanvas" width="400" height="600"&gt;&lt;/canvas&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;input type="text" id="playerName" placeholder="Enter your name" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button onclick="startGame()"&gt;Start Game&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;h2&gt;High Scores&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="highScores"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const canvas = document.getElementById('gameCanvas');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const ctx = canvas.getContext('2d');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>let bird = {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>x: 50,</p>
+<p class="p1"><span class="Apple-converted-space">            </span>y: 150,</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 30,</p>
+<p class="p1"><span class="Apple-converted-space">            </span>height: 30,</p>
+<p class="p1"><span class="Apple-converted-space">            </span>gravity: 0.6,</p>
+<p class="p1"><span class="Apple-converted-space">            </span>jump: -10,</p>
+<p class="p1"><span class="Apple-converted-space">            </span>velocity: 0,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>let pipes = [];</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let pipeWidth = 50;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let pipeGap = 180;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let pipeSpeed = 2;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let pipeDistance = 300;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let score = 0;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let highScores = [];</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let playerName = '';</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let gameRunning = false;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Function to start the game</p>
+<p class="p1"><span class="Apple-converted-space">        </span>function startGame() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>playerName = document.getElementById('playerName').value;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (playerName) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>resetGame();</p>
+<p class="p1"><span class="Apple-converted-space">                </span>gameRunning = true;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>gameLoop();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>alert('Please enter your name to play.');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Reset game</p>
+<p class="p1"><span class="Apple-converted-space">        </span>function resetGame() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>bird.y = 150;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>bird.velocity = 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>pipes = [];</p>
+<p class="p1"><span class="Apple-converted-space">            </span>score = 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>for (let i = 0; i &lt; 3; i++) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>pipes.push({</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>x: canvas.width + i * pipeDistance,</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>topHeight: Math.random() * (canvas.height - pipeGap),</p>
+<p class="p1"><span class="Apple-converted-space">                </span>});</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Game loop</p>
+<p class="p1"><span class="Apple-converted-space">        </span>function gameLoop() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (gameRunning) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>ctx.clearRect(0, 0, canvas.width, canvas.height);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>// Bird logic</p>
+<p class="p1"><span class="Apple-converted-space">                </span>bird.velocity += bird.gravity;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>bird.y += bird.velocity;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>// Draw bird</p>
+<p class="p1"><span class="Apple-converted-space">                </span>ctx.fillStyle = 'yellow';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>ctx.fillRect(bird.x, bird.y, bird.width, bird.height);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>// Pipe logic</p>
+<p class="p1"><span class="Apple-converted-space">                </span>pipes.forEach((pipe, index) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>pipe.x -= pipeSpeed;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>// Top pipe</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>ctx.fillStyle = 'green';</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>ctx.fillRect(pipe.x, 0, pipeWidth, pipe.topHeight);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>// Bottom pipe</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>ctx.fillRect(pipe.x, pipe.topHeight + pipeGap, pipeWidth, canvas.height - pipe.topHeight - pipeGap);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>// Collision detection</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>bird.x + bird.width &gt; pipe.x &amp;&amp;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>bird.x &lt; pipe.x + pipeWidth &amp;&amp;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>(bird.y &lt; pipe.topHeight || bird.y + bird.height &gt; pipe.topHeight + pipeGap)</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>) {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>gameOver();</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>// If pipe moves out of the screen, generate a new one</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (pipe.x + pipeWidth &lt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>pipes.splice(index, 1);</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>score++;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>pipes.push({</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>x: pipes[pipes.length - 1].x + pipeDistance,</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>topHeight: Math.random() * (canvas.height - pipeGap),</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>});</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>// Check if bird hits the top or bottom of the canvas</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (bird.y &lt; 0 || bird.y + bird.height &gt;= canvas.height) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>gameOver();</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>// Display score</p>
+<p class="p1"><span class="Apple-converted-space">                </span>ctx.fillStyle = 'white';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>ctx.font = '30px Arial';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>ctx.fillText(`Score: ${score}`, 10, 50);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>// Continue game loop</p>
+<p class="p1"><span class="Apple-converted-space">                </span>requestAnimationFrame(gameLoop);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Game over logic</p>
+<p class="p1"><span class="Apple-converted-space">        </span>function gameOver() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>gameRunning = false;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>saveHighScore(playerName, score);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>alert(`Game over! Your score: ${score}`);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>displayHighScores();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Save high score</p>
+<p class="p1"><span class="Apple-converted-space">        </span>function saveHighScore(name, score) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>highScores.push({ name, score });</p>
+<p class="p1"><span class="Apple-converted-space">            </span>highScores.sort((a, b) =&gt; b.score - a.score);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>highScores = highScores.slice(0, 5); // Keep top 5 scores</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Display high scores</p>
+<p class="p1"><span class="Apple-converted-space">        </span>function displayHighScores() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const highScoreDiv = document.getElementById('highScores');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>highScoreDiv.innerHTML = highScores</p>
+<p class="p1"><span class="Apple-converted-space">                </span>.map((score, index) =&gt; `${index + 1}. ${score.name}: ${score.score}`)</p>
+<p class="p1"><span class="Apple-converted-space">                </span>.join('&lt;br&gt;');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Event listener for spacebar to jump</p>
+<p class="p1"><span class="Apple-converted-space">        </span>document.addEventListener('keydown', (e) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (e.code === 'Space' &amp;&amp; gameRunning) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>bird.velocity = bird.jump;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Event listener for mouse click to jump</p>
+<p class="p1"><span class="Apple-converted-space">        </span>document.addEventListener('click', () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (gameRunning) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>bird.velocity = bird.jump;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
